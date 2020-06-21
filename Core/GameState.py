@@ -1,6 +1,28 @@
 import json
 from Core.Zones import *
 from Core.CardClasses import *
+import random
+
+class GameState: #Library, Hand, Graveyard, Battlefield, etc
+
+    def __init__(self):
+        self.library = Zone("Library")
+        self.hand = Zone("Hand")
+        self.graveyard = Zone("Graveyard")
+        self.battlefield = Zone("Battlefield")
+        self.exile = Zone("Exile")
+
+        self.opponentsLife = 20
+        self.ourLife = 20
+
+        self.onThePlay = random.randint(0,1)
+
+        # Place to record miscellaneous information about the game
+        self.scratchpad = {}
+
+    def __str__(self):
+        return "Our Life Total to Opponents:\t%d to %d" % (self.ourLife, self.opponentsLife)
+
 
 def importDeck(file_name):
 
@@ -23,7 +45,6 @@ def importDeck(file_name):
                 card = Card(k, "other", mana)
             library.addCard(card)
 
-    library.shuffleCards()
     return library
 
 

@@ -9,6 +9,16 @@ class Zone: #Library, Hand, Graveyard, Battlefield, etc
     def addCard(self, card):
         self.card_list.append(card)
 
+    def removeCard(self, index=0):
+        return self.card_list.pop(index)
+
+    def removeCardName(self, name):
+        for i, c in enumerate(self.card_list):
+            if c.name == name:
+                return self.card_list.pop(i)
+
+        return None
+
     def printCards(self):
         card_index = 1
         print("\nCards in %s zone" % self.name)
@@ -31,3 +41,11 @@ class Zone: #Library, Hand, Graveyard, Battlefield, etc
                 numFound += 1
 
         return (numFound >= minNumNeeded) and (numFound <= maxNumNeeded)
+
+    def containsCard(self, name):
+        numFound = 0
+        for card in self.card_list:
+            if name == card.name:
+                numFound += 1
+
+        return numFound

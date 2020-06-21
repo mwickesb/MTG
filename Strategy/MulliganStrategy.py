@@ -1,23 +1,43 @@
-# Types needed is a dictionary of card types and the minimum number of cards needed of that type
-def mullBasedNeededTypes(hand, typesNeeded):
+from Core.Zones import *
+from Core.GameState import *
+import copy
 
-    typesFound = {}
-    shouldKeep = True
+# library - Initial unshuffled library to use through the mulligan process
+# typesNeededList - an array of dictionaries, where each dictionary specifies the types needed for a round of mulligans
+# The first element is your types needed for the first mulligan check, the second element is for checking if a second
+# mulligan is needed, so on and so forth
+#
+# Returns a completed gamestate, with finished hand, library, battlefield, and GY zones.  Time to battle!
+def mullToNeededTypes(library, typesNeededList=[]):
 
-    # Count card types in hand
-    for card in hand.card_list:
-        if card.card_type in typesFound:
-            typesFound[card.card_type] += 1
-        else:
-            typesFound[card.card_type] = 1
+    gamestate = GameState()
+    shuffledLib = Zone("Library")
+    hand = Zone("Hand")
+    numMulls = 0
 
-    # See if the desired amount of cards was found
-    for type, numNeeded in typesNeeded.items():
+    # Iterate through the mulligan rounds
+    for typesNeeded in typesNeededList:
+        shuffledLib = copy.deepcopy(library)
+        shuffledLib.shuffleCards()
+        hand = Zone("hand")
+        shuffledLib.drawCards(hand, 7)
 
-        minNeeded = numNeeded[0]
-        maxNeeded = numNeeded[1]
+        typesFound = {}
+        shouldKeep = True
 
-        if type != "OTHER":
+        # Count card types in hand
+        for card in hand.card_list:
+            if card.card_type in typesFound:
+                typesFound[card.card_type] += 1
+            else:
+                typesFound[card.card_type] = 1
+
+        # See if the desired amount of cards was found
+        for type, numNeeded in typesNeeded.items():
+
+            minNeeded = numNeeded[0]
+            maxNeeded = numNeeded[1]
+
             if type not in typesFound:
                 shouldKeep = False
                 break
@@ -25,8 +45,18 @@ def mullBasedNeededTypes(hand, typesNeeded):
                 if (typesFound[type] < minNeeded) or (typesFound[type] > maxNeeded):
                     shouldKeep = False
                     break
-        else:
-            #TODO - Implement this check later
-            continue
 
-    return not shouldKeep
+        if shouldKeep:
+            break
+
+        numMulls += 1
+
+    # Return cards after a keep
+    for i in range(numMulls):
+        hand.removeCard()
+
+    # After all the mulligans finish produce a final gamestate and return it
+    gamestate.library = shuffledLib
+    gamestate.hand = hand
+
+    return gamestate
