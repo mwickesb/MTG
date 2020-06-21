@@ -1,26 +1,11 @@
 from Core.CardClasses import *
 from Core.Zones import *
 from Core.GameState import *
+from Core.SimulationEngine import *
 from Strategy.MulliganStrategy import *
 
-
-FILE_NAME = "../Decks/AggroDeck.json"
-NUM_GAMES = 10000
-
-# A list of lists with the following structure
-# game_results[i] = the i'th simulated game
-# game_results[i][0] = Mulligan count
-# game_results[i][1] = The combo turn
-# game_results[i][2] = The combo type
-# game_results[1][3] = Total damage delt in game
-game_results = []
-MULL_COUNT = "MULL_COUNT"
-COMBO_TURN = "COMBO_TURN"
-COMBO_TYPE = "COMBO_TYPE"
-TOTAL_DAMAGE = "TOTAL_DAMAGE"
-
-# Import a Deck and draw a fresh hand
-library = importDeck(FILE_NAME)
+EXPERIMENT_DIR = "1"
+NUM_GAMES = 500
 
 # Define mulligan rules
 typesNeededList = [
@@ -58,6 +43,11 @@ def takeTurn(gamestate, turncount):
         gamestate.battlefield.addCard(playedLand)
     totalMana = len([i for i in gamestate.battlefield.card_list if i.card_type == "Land"])
 
+    # Update Creatures turncount to remove summoning sickness
+    for card in gamestate.battlefield.card_list:
+        if card.card_type == "Creature":
+            card.turns += 1
+
     # Resolve miracles and see if you can combo out Incinerator
     if didMiracle and totalMana >= 1:
         totalMana -= 1
@@ -71,11 +61,6 @@ def takeTurn(gamestate, turncount):
             if "comboTurn" not in gamestate.scratchpad:
                 gamestate.scratchpad["comboTurn"] = turncount
                 gamestate.scratchpad["comboType"] = "Miracle"
-
-    # Update Creatures turncount to remove summoning sickness
-    for card in gamestate.battlefield.card_list:
-        if card.card_type == "Creature":
-            card.turns += 1
 
     # Check to see if you can play Incinerator with burn damage.  If so, execute the sequence
     if totalBurn >= 3 and gamestate.battlefield.containsCard("Seal of Fire") and gamestate.hand.containsCard("Chandras Incinerator") and totalMana >= 1:
@@ -137,50 +122,10 @@ def takeTurn(gamestate, turncount):
 
     return comboType
 
-def playGame(gamestate):
+def playGame(gamestate, playTurn):
 
     # We'll play 3 turns per game and see how quickly we combo with Incinerator
     for turncount in range(1,4):
-        takeTurn(gamestate, turncount)
+        playTurn(gamestate, turncount)
 
-# Simulation loop
-for gamecount in range(NUM_GAMES):
-    # Resolve mulligans
-    gamestate = mullToNeededTypes(library, typesNeededList)
-    numMull = 7 - len(gamestate.hand.card_list)
-    playGame(gamestate)
-
-    # Record the results
-    result = {}
-    result[MULL_COUNT] = numMull
-    if "comboTurn" in gamestate.scratchpad:
-        result[COMBO_TURN] = gamestate.scratchpad["comboTurn"]
-        result[COMBO_TYPE] = gamestate.scratchpad["comboType"]
-    else:
-        result[COMBO_TURN] = 0
-        result[COMBO_TYPE] = "No Combo"
-    result[TOTAL_DAMAGE] = 20 - gamestate.opponentsLife
-    game_results.append(result)
-
-# Show the results
-countKeeps = sum(map(lambda result : result[MULL_COUNT] == 0, game_results))
-count1Mull = sum(map(lambda result : result[MULL_COUNT] == 1, game_results))
-count2Mull = sum(map(lambda result : result[MULL_COUNT] == 2, game_results))
-countT2Combo = sum(map(lambda result : result[COMBO_TURN] == 2, game_results))
-countT3Combo = sum(map(lambda result : result[COMBO_TURN] == 3, game_results))
-countCT_Miracle = sum(map(lambda result : result[COMBO_TYPE] == "Miracle", game_results))
-countCT_DelayedBurn = sum(map(lambda result : result[COMBO_TYPE] == "Delayed Burn", game_results))
-countCT_DoubleBolt = sum(map(lambda result : result[COMBO_TYPE] == "Double Bolt Burn", game_results))
-totalCombos = countCT_Miracle + countCT_DelayedBurn + countCT_DoubleBolt
-
-print('Percent 7 card hands:\t' + str(round(countKeeps / NUM_GAMES,3)))
-print('Percent Mull to 6   :\t' + str(round(count1Mull / NUM_GAMES,3)))
-print('Percent Mull to 5   :\t' + str(round(count2Mull / NUM_GAMES,3)))
-print('')
-print('Percent  T2 Incinerator:\t' + str(round(countT2Combo / NUM_GAMES,3)))
-print('Percent  T3 Incinerator:\t' + str(round(countT3Combo / NUM_GAMES,3)))
-print('')
-print('Total Combos                :\t' + str(totalCombos))
-print('Percent  Miracle Combos     :\t' + str(round(countCT_Miracle / totalCombos,3)))
-print('Percent  Delayed Burn Combos:\t' + str(round(countCT_DelayedBurn / totalCombos,3)))
-print('Percent  Double Bolt Combos :\t' + str(round(countCT_DoubleBolt / totalCombos,3)))
+runSimulations(EXPERIMENT_DIR, typesNeededList, NUM_GAMES, takeTurn, playGame)
