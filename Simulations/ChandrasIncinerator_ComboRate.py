@@ -178,7 +178,7 @@ def getT2Combo(comboRateByTurn):
 t2ComboRate = ScoreCriteria(["ComboTurn"], getT2Combo)
 visualizeResults(resultsDir, dimensions, t2ComboRate, "T2 Combo Rate - Seal v Wrath")
 
-# Visualize T2 combo rate
+# Visualize T3 combo rate
 def getT3Combo(comboRateByTurn):
     return comboRateByTurn[2]
 t3ComboRate = ScoreCriteria(["ComboTurn"], getT3Combo)
