@@ -18,3 +18,21 @@ I'm attempting to combine the following great contributions:
 
 And I'll be putting my own spin on the above as well.  Contributing novel concepts of context driven simulations in
 addition to ML driven optimization
+
+----
+
+**Examples of Possible Simulations**
+
+**Overall Combo Rate**
+
+![Overall Rate](Documentation/OverallRate.png)
+
+
+**T2 Combo Rate**
+
+![T2 Rate](Documentation/T2Rate.png)
+
+
+**T3 Combo Rate**
+
+![T3 Rate](Documentation/T3Rate.png)
