@@ -1,11 +1,12 @@
 from Core.CardClasses import *
 from Core.Zones import *
 from Core.GameState import *
+from Core.ScoreResults import *
 from Core.SimulationEngine import *
 from Strategy.MulliganStrategy import *
 
 EXPERIMENT_DIR = "1"
-NUM_GAMES = 500
+NUM_GAMES = 10000
 
 # Define mulligan rules
 typesNeededList = [
@@ -129,3 +130,17 @@ def playGame(gamestate, playTurn):
         playTurn(gamestate, turncount)
 
 runSimulations(EXPERIMENT_DIR, typesNeededList, NUM_GAMES, takeTurn, playGame)
+
+# Visualize the simulations results
+resultsDir = "../Results/" + EXPERIMENT_DIR
+dimensions = ["Seal of Fire", "Thunderous Wrath"]
+
+def sumComboRate(comboRateByTurn):
+    comboRate = 0
+    for i in range(0,len(comboRateByTurn)):
+        comboRate += comboRateByTurn[i]
+
+    return comboRate
+scoreCriteria = ScoreCriteria(["ComboTurn"], sumComboRate)
+
+visualizeResults(resultsDir, dimensions, scoreCriteria)

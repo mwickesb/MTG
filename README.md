@@ -1,4 +1,13 @@
 # MTG
+Here's an overview of the work:
+* **Core** - Engines for running simulations as well as OOP classes for Magic
+* **Strategy** - Common strategy and gameplay to facillitate easy scripting for simulations
+* **Decks** - Decklists to run simulations upon
+* **Experiments** - Stores permutations and hyperparameters for multi dimensional simulations
+* **Results** - Stores results of Experiments
+* **Simulations** - Entry points into running simulations
+____
+
 Inspired by giants and geniuses in our community I'll be self experimenting with my own mix of MTG Simulations
 
 I'm attempting to combine the following great contributions:

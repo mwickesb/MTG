@@ -2,8 +2,14 @@ from Core.CardClasses import *
 from Core.Zones import *
 from Core.GameState import *
 from Strategy.MulliganStrategy import *
+
 import os
 import sys
+import json
+
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
 
 PATH_TO_EXPERIMENTS = "../Experiments"
 PATH_TO_RESULTS = "../Results"
@@ -115,3 +121,59 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
         # print('Percent  Miracle Combos     :\t' + str(round(countCT_Miracle / totalCombos,3)))
         # print('Percent  Delayed Burn Combos:\t' + str(round(countCT_DelayedBurn / totalCombos,3)))
         # print('Percent  Double Bolt Combos :\t' + str(round(countCT_DoubleBolt / totalCombos,3)))
+
+def visualizeResults(resultsDirectory, dimensions, scoreCriteria):
+
+    # Generate scores in a matrix
+    # scores[sealDim][wrathDim]
+    scores = np.zeros((5, 5))
+
+    # Find all permutations of results to use for the visualization
+    results = []
+    for root, directories, filenames in os.walk(resultsDirectory):
+        for filename in filenames:
+            resultPath = root + "/" + filename
+
+            #TODO - This is hardcoded to the Chandra's Incinerator experiments, broaden this soon
+            tokens = filename.split("_")
+            sealDim = int(tokens[1].rsplit(' ',1)[1])
+            wrathDim = int(tokens[2].rsplit(' ',1)[1].split(".")[0])
+            result = json.load(open(resultPath))
+
+            score = round(scoreCriteria.scoreResult(result),3)
+            scores[sealDim][wrathDim] = score
+
+            results.append({
+                "dimensions" : {"Seal of Fire": sealDim, "Thunderous Wrath": wrathDim},
+                "result" : result,
+                "score" : score
+            })
+
+    sealTitles = ["Seal = 0", "Seal = 1", "Seal = 2", "Seal = 3",
+                  "Seal = 4"]
+    wrathTitles = ["Wrath = 0", "Wrath = 1", "Wrath = 2",
+               "Wrath = 3", "Wrath = 4"]
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(scores)
+
+    # We want to show all ticks...
+    ax.set_xticks(np.arange(len(wrathTitles)))
+    ax.set_yticks(np.arange(len(sealTitles)))
+    # ... and label them with the respective list entries
+    ax.set_xticklabels(wrathTitles)
+    ax.set_yticklabels(sealTitles)
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    for i in range(len(sealTitles)):
+        for j in range(len(wrathTitles)):
+            text = ax.text(j, i, scores[i, j],
+                           ha="center", va="center", color="w")
+
+    ax.set_title("Combo rate by varying Seals vs Wraths")
+    fig.tight_layout()
+    plt.show()
