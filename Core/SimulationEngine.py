@@ -122,7 +122,7 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
         # print('Percent  Delayed Burn Combos:\t' + str(round(countCT_DelayedBurn / totalCombos,3)))
         # print('Percent  Double Bolt Combos :\t' + str(round(countCT_DoubleBolt / totalCombos,3)))
 
-def visualizeResults(resultsDirectory, dimensions, scoreCriteria):
+def visualizeResults(resultsDirectory, dimensions, scoreCriteria, title):
 
     # Generate scores in a matrix
     # scores[sealDim][wrathDim]
@@ -174,6 +174,6 @@ def visualizeResults(resultsDirectory, dimensions, scoreCriteria):
             text = ax.text(j, i, scores[i, j],
                            ha="center", va="center", color="w")
 
-    ax.set_title("Combo rate by varying Seals vs Wraths")
+    ax.set_title(title)
     fig.tight_layout()
     plt.show()

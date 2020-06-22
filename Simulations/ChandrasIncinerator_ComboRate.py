@@ -30,7 +30,7 @@ def takeTurn(gamestate, turncount):
     moveCard(gamestate.library, gamestate.hand, 0)
 
     # Check for a miracle
-    didMiracle = gamestate.hand.card_list[0].name == "Thunderous Wrath"
+    didMiracle = gamestate.hand.card_list[-1].name == "Thunderous Wrath"
 
     # Resolve Rift Bolts
     for i, card in enumerate(gamestate.exile.card_list):
@@ -67,8 +67,24 @@ def takeTurn(gamestate, turncount):
     if totalBurn >= 3 and gamestate.battlefield.containsCard("Seal of Fire") and gamestate.hand.containsCard("Chandras Incinerator") and totalMana >= 1:
         resolvedSeal = gamestate.battlefield.removeCardName("Seal of Fire")
         gamestate.graveyard.addCard(resolvedSeal)
+        totalBurn += 2
+        comboType = "Delayed Burn"
+    if totalBurn >= 3 and gamestate.hand.containsCard("Seal of Fire") and gamestate.hand.containsCard("Chandras Incinerator") and totalMana >= 2:
+        playedSeal = gamestate.hand.removeCardName("Seal of Fire")
+        gamestate.graveyard.addCard(playedSeal)
+        totalMana -= 1
+        totalBurn += 2
         comboType = "Delayed Burn"
     if totalBurn >= 2 and gamestate.hand.containsCard("Bolt Burn") and gamestate.hand.containsCard("Chandras Incinerator") and totalMana >= 2:
+        playedBolt = gamestate.hand.removeCardName("Bolt Burn")
+        gamestate.graveyard.addCard(playedBolt)
+        totalMana -= 1
+        totalBurn += 3
+        comboType = "Delayed Burn"
+    if gamestate.battlefield.containsCard("Seal of Fire") and gamestate.hand.containsCard("Bolt Burn") and gamestate.hand.containsCard("Chandras Incinerator") and totalMana >= 2:
+        resolvedSeal = gamestate.battlefield.removeCardName("Seal of Fire")
+        gamestate.graveyard.addCard(resolvedSeal)
+        totalBurn += 2
         playedBolt = gamestate.hand.removeCardName("Bolt Burn")
         gamestate.graveyard.addCard(playedBolt)
         totalMana -= 1
@@ -82,6 +98,17 @@ def takeTurn(gamestate, turncount):
         totalMana -= 2
         totalBurn += 6
         comboType = "Double Bolt Burn"
+    if (gamestate.battlefield.containsCard("Seal of Fire") >= 2) and gamestate.hand.containsCard("Seal of Fire") and gamestate.hand.containsCard("Chandras Incinerator") and totalMana >= 2:
+        resolvedSeal = gamestate.battlefield.removeCardName("Seal of Fire")
+        gamestate.graveyard.addCard(resolvedSeal)
+        resolvedSeal = gamestate.battlefield.removeCardName("Seal of Fire")
+        gamestate.graveyard.addCard(resolvedSeal)
+        totalBurn += 4
+        playedSeal = gamestate.hand.removeCardName("Seal of Fire")
+        gamestate.graveyard.addCard(playedSeal)
+        totalMana -= 1
+        totalBurn += 2
+        comboType = "Delayed Burn"
     if totalBurn >= 5 and gamestate.hand.containsCard("Chandras Incinerator") and totalMana >= 1:
         playedIncinerator = gamestate.hand.removeCardName("Chandras Incinerator")
         gamestate.battlefield.addCard(playedIncinerator)
@@ -112,8 +139,9 @@ def takeTurn(gamestate, turncount):
 
     # Attack!
     for card in gamestate.battlefield.card_list:
-        if card.card_type == "Creature" and (card.turns is not None):
-            totalDamage += card.power
+        if card.card_type == "Creature":
+            if card.turns >= 1 or card.haste:
+                totalDamage += card.power
 
     totalDamage += totalBurn
     gamestate.opponentsLife -= totalDamage
@@ -131,16 +159,27 @@ def playGame(gamestate, playTurn):
 
 runSimulations(EXPERIMENT_DIR, typesNeededList, NUM_GAMES, takeTurn, playGame)
 
-# Visualize the simulations results
 resultsDir = "../Results/" + EXPERIMENT_DIR
 dimensions = ["Seal of Fire", "Thunderous Wrath"]
 
+# Visualize the simulations results
 def sumComboRate(comboRateByTurn):
     comboRate = 0
     for i in range(0,len(comboRateByTurn)):
         comboRate += comboRateByTurn[i]
 
     return comboRate
-scoreCriteria = ScoreCriteria(["ComboTurn"], sumComboRate)
+overallComboRate = ScoreCriteria(["ComboTurn"], sumComboRate)
+visualizeResults(resultsDir, dimensions, overallComboRate, "Overall Combo Rate - Seal v Wrath")
 
-visualizeResults(resultsDir, dimensions, scoreCriteria)
+# Visualize T2 combo rate
+def getT2Combo(comboRateByTurn):
+    return comboRateByTurn[1]
+t2ComboRate = ScoreCriteria(["ComboTurn"], getT2Combo)
+visualizeResults(resultsDir, dimensions, t2ComboRate, "T2 Combo Rate - Seal v Wrath")
+
+# Visualize T2 combo rate
+def getT3Combo(comboRateByTurn):
+    return comboRateByTurn[2]
+t3ComboRate = ScoreCriteria(["ComboTurn"], getT3Combo)
+visualizeResults(resultsDir, dimensions, t3ComboRate, "T3 Combo Rate - Seal v Wrath")
