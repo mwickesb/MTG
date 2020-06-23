@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 
 PATH_TO_EXPERIMENTS = "../Experiments"
 PATH_TO_RESULTS = "../Results"
-FILE_NAME = "../Decks/AggroDeck.json"
 
 # A list of lists with the following structure
 # game_results[i] = the i'th simulated game
@@ -28,11 +27,13 @@ COMBO_TYPE = "COMBO_TYPE"
 TOTAL_DAMAGE = "TOTAL_DAMAGE"
 
 # Runs through a directory of simulation experiments and saves results
-def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGame):
+def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGame, recordGameResult, recordSimulationSummary):
     pathToExperiments = PATH_TO_EXPERIMENTS + "/" + experimentDirectory
     pathToResults = PATH_TO_RESULTS + "/" + experimentDirectory
 
     # Calculate all permutations of simulations
+    # experiments[i][0] - The Decklist of the i'th simulation to run
+    # experiments[i][1] - The results of the i'th simulation
     experiments = []
     for root, directories, filenames in os.walk(pathToExperiments):
         for filename in filenames:
@@ -40,6 +41,7 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
             resultsFilePath = decklistFilePath.replace(pathToExperiments,pathToResults)
             experiments.append([decklistFilePath, resultsFilePath])
 
+    # Calculate number of runs to complete 1/10th of a sim
     oneTenthChunk = 10
     if (numGames > 100):
         oneTenthChunk = int(numGames/10)
@@ -48,7 +50,7 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
     for expIndex, experiment in enumerate(experiments):
 
         # Import a Deck and draw a fresh hand
-        library = importDeck(experiment[0])
+        (library, config) = importDeck(experiment[0])
         game_results = []
 
         # Simulation loop
@@ -66,40 +68,16 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
             numMull = 7 - len(gamestate.hand.card_list)
             playGame(gamestate, playTurn)
 
-            # Record the results
-            result = {}
+            result = recordGameResult(gamestate)
             result[MULL_COUNT] = numMull
-            if "comboTurn" in gamestate.scratchpad:
-                result[COMBO_TURN] = gamestate.scratchpad["comboTurn"]
-                result[COMBO_TYPE] = gamestate.scratchpad["comboType"]
-            else:
-                result[COMBO_TURN] = 0
-                result[COMBO_TYPE] = "No Combo"
             result[TOTAL_DAMAGE] = 20 - gamestate.opponentsLife
             game_results.append(result)
+
         print("] -",round((expIndex+1)/len(experiments),3))
         sys.stdout.flush()
 
-        # Calculate result summary statistics
-        countKeeps = sum(map(lambda result : result[MULL_COUNT] == 0, game_results))
-        count1Mull = sum(map(lambda result : result[MULL_COUNT] == 1, game_results))
-        count2Mull = sum(map(lambda result : result[MULL_COUNT] == 2, game_results))
-        countT2Combo = sum(map(lambda result : result[COMBO_TURN] == 2, game_results))
-        countT3Combo = sum(map(lambda result : result[COMBO_TURN] == 3, game_results))
-        countCT_Miracle = sum(map(lambda result : result[COMBO_TYPE] == "Miracle", game_results))
-        countCT_DelayedBurn = sum(map(lambda result : result[COMBO_TYPE] == "Delayed Burn", game_results))
-        countCT_DoubleBolt = sum(map(lambda result : result[COMBO_TYPE] == "Double Bolt Burn", game_results))
-        totalCombos = countCT_Miracle + countCT_DelayedBurn + countCT_DoubleBolt
-        resultsSummary = {
-            "WinningTurn" : -1,
-            "ComboTurn" : [0,round(countT2Combo / numGames,3),round(countT3Combo / numGames,3)],
-            "mulligans" : [round(countKeeps / numGames,3), round(count1Mull / numGames,3),round(count2Mull / numGames,3)],
-            "comboType" : {
-                "Miracle" : round(countCT_Miracle / totalCombos,3),
-                "Delayed Burn" : round(countCT_DelayedBurn / totalCombos,3),
-                "Double Bolt" : round(countCT_DoubleBolt / totalCombos,3)
-            }
-        }
+        resultsSummary = recordSimulationSummary(game_results, numGames)
+        resultsSummary["config"] = config
 
         # Save results summary to file in a directory structure that mirrors the experiment structure
         resultsFilePath = experiment[1]
@@ -109,68 +87,83 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
         with open(resultsFilePath, "w+") as resultsFile:
             json.dump(resultsSummary, resultsFile)
 
-        # print("")
-        # print('Percent 7 card hands:\t' + str(round(countKeeps / numGames,3)))
-        # print('Percent Mull to 6   :\t' + str(round(count1Mull / numGames,3)))
-        # print('Percent Mull to 5   :\t' + str(round(count2Mull / numGames,3)))
-        # print('')
-        # print('Percent  T2 Incinerator:\t' + str(round(countT2Combo / numGames,3)))
-        # print('Percent  T3 Incinerator:\t' + str(round(countT3Combo / numGames,3)))
-        # print('')
-        # print('Total Combos                :\t' + str(totalCombos))
-        # print('Percent  Miracle Combos     :\t' + str(round(countCT_Miracle / totalCombos,3)))
-        # print('Percent  Delayed Burn Combos:\t' + str(round(countCT_DelayedBurn / totalCombos,3)))
-        # print('Percent  Double Bolt Combos :\t' + str(round(countCT_DoubleBolt / totalCombos,3)))
-
 def visualizeResults(resultsDirectory, dimensions, scoreCriteria, title):
 
     # Generate scores in a matrix
     # scores[sealDim][wrathDim]
-    scores = np.zeros((5, 5))
+    scores = np.zeros((100, 100))
+    dimMin = {}
+    dimMax = {}
 
     # Find all permutations of results to use for the visualization
-    results = []
+    scoreRecords = []
+    isFirstPass = True
     for root, directories, filenames in os.walk(resultsDirectory):
         for filename in filenames:
             resultPath = root + "/" + filename
 
-            #TODO - This is hardcoded to the Chandra's Incinerator experiments, broaden this soon
-            tokens = filename.split("_")
-            sealDim = int(tokens[1].rsplit(' ',1)[1])
-            wrathDim = int(tokens[2].rsplit(' ',1)[1].split(".")[0])
+            # Associate a score with the requested dimensions, this info is in the config section of the results file
             result = json.load(open(resultPath))
 
+            resultIdx = result["config"]["dimensions"]
+            dim1 = resultIdx[dimensions[0]]
+            dim2 = resultIdx[dimensions[1]]
             score = round(scoreCriteria.scoreResult(result),3)
-            scores[sealDim][wrathDim] = score
+            scores[dim1][dim2] = score
 
-            results.append({
-                "dimensions" : {"Seal of Fire": sealDim, "Thunderous Wrath": wrathDim},
+            scoreRecords.append({
+                "dimensions" : resultIdx,
                 "result" : result,
                 "score" : score
             })
 
-    sealTitles = ["Seal = 0", "Seal = 1", "Seal = 2", "Seal = 3",
-                  "Seal = 4"]
-    wrathTitles = ["Wrath = 0", "Wrath = 1", "Wrath = 2",
-               "Wrath = 3", "Wrath = 4"]
+            if isFirstPass:
+                isFirstPass = False
+                dimMin[dimensions[0]] = dim1
+                dimMin[dimensions[1]] = dim2
+                dimMax[dimensions[0]] = dim1
+                dimMax[dimensions[1]] = dim2
+            else:
+                dimMin[dimensions[0]] = min(dimMin[dimensions[0]], dim1)
+                dimMin[dimensions[1]] = min(dimMin[dimensions[1]], dim2)
+                dimMax[dimensions[0]] = max(dimMax[dimensions[0]], dim1)
+                dimMax[dimensions[1]] = max(dimMax[dimensions[1]], dim2)
+
+    # Slice the scores matrix into the proper ranges
+    d1Min = dimMin[dimensions[0]]
+    d1Max = dimMax[dimensions[0]]
+    d2Min = dimMin[dimensions[1]]
+    d2Max = dimMax[dimensions[1]]
+    scores = scores[d1Min:(d1Max + 1), d2Min:(d2Max + 1)]
+
+    # Construct axis titles
+    rowTitles = []
+    colTitles = []
+    for row in range(d1Min, (d1Max + 1)):
+        rowPrefix = dimensions[0].split()[0]
+        rowTitles.append(rowPrefix + " = " + str(row))
+
+    for col in range(d2Min, (d2Max + 1)):
+        colPrefix = dimensions[1].split()[0]
+        colTitles.append(colPrefix + " = " + str(col))
 
     fig, ax = plt.subplots()
     im = ax.imshow(scores)
 
     # We want to show all ticks...
-    ax.set_xticks(np.arange(len(wrathTitles)))
-    ax.set_yticks(np.arange(len(sealTitles)))
+    ax.set_xticks(np.arange(len(colTitles)))
+    ax.set_yticks(np.arange(len(rowTitles)))
     # ... and label them with the respective list entries
-    ax.set_xticklabels(wrathTitles)
-    ax.set_yticklabels(sealTitles)
+    ax.set_xticklabels(colTitles)
+    ax.set_yticklabels(rowTitles)
 
     # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
              rotation_mode="anchor")
 
     # Loop over data dimensions and create text annotations.
-    for i in range(len(sealTitles)):
-        for j in range(len(wrathTitles)):
+    for i in range(len(rowTitles)):
+        for j in range(len(colTitles)):
             text = ax.text(j, i, scores[i, j],
                            ha="center", va="center", color="w")
 

@@ -8,6 +8,11 @@ from Strategy.MulliganStrategy import *
 EXPERIMENT_DIR = "1"
 NUM_GAMES = 10000
 
+MULL_COUNT = "MULL_COUNT"
+COMBO_TURN = "COMBO_TURN"
+COMBO_TYPE = "COMBO_TYPE"
+TOTAL_DAMAGE = "TOTAL_DAMAGE"
+
 # Define mulligan rules
 typesNeededList = [
     # 7 card mulligan rule
@@ -27,10 +32,12 @@ def takeTurn(gamestate, turncount):
     comboType = "No Combo"
 
     # Draw Phase
-    moveCard(gamestate.library, gamestate.hand, 0)
+    didMiracle = False
+    if (turncount != 1) or (gamestate.onThePlay != 1):
+        moveCard(gamestate.library, gamestate.hand, 0)
 
-    # Check for a miracle
-    didMiracle = gamestate.hand.card_list[-1].name == "Thunderous Wrath"
+        # Check for a miracle
+        didMiracle = gamestate.hand.card_list[-1].name == "Thunderous Wrath"
 
     # Resolve Rift Bolts
     for i, card in enumerate(gamestate.exile.card_list):
@@ -157,7 +164,44 @@ def playGame(gamestate, playTurn):
     for turncount in range(1,4):
         playTurn(gamestate, turncount)
 
-runSimulations(EXPERIMENT_DIR, typesNeededList, NUM_GAMES, takeTurn, playGame)
+def recordGameResult(gamestate):
+    # Record the results
+    result = {}
+    if "comboTurn" in gamestate.scratchpad:
+        result[COMBO_TURN] = gamestate.scratchpad["comboTurn"]
+        result[COMBO_TYPE] = gamestate.scratchpad["comboType"]
+    else:
+        result[COMBO_TURN] = 0
+        result[COMBO_TYPE] = "No Combo"
+
+    return result
+
+def recordSimulationSummary(game_results,numGames):
+    # Calculate result summary statistics
+    countKeeps = sum(map(lambda result: result[MULL_COUNT] == 0, game_results))
+    count1Mull = sum(map(lambda result: result[MULL_COUNT] == 1, game_results))
+    count2Mull = sum(map(lambda result: result[MULL_COUNT] == 2, game_results))
+    countT2Combo = sum(map(lambda result: result[COMBO_TURN] == 2, game_results))
+    countT3Combo = sum(map(lambda result: result[COMBO_TURN] == 3, game_results))
+    countCT_Miracle = sum(map(lambda result: result[COMBO_TYPE] == "Miracle", game_results))
+    countCT_DelayedBurn = sum(map(lambda result: result[COMBO_TYPE] == "Delayed Burn", game_results))
+    countCT_DoubleBolt = sum(map(lambda result: result[COMBO_TYPE] == "Double Bolt Burn", game_results))
+    totalCombos = countCT_Miracle + countCT_DelayedBurn + countCT_DoubleBolt
+    resultsSummary = {
+        "WinningTurn": -1,
+        "ComboTurn": [0, round(countT2Combo / numGames, 3), round(countT3Combo / numGames, 3)],
+        "mulligans": [round(countKeeps / numGames, 3), round(count1Mull / numGames, 3),
+                      round(count2Mull / numGames, 3)],
+        "comboType": {
+            "Miracle": round(countCT_Miracle / totalCombos, 3),
+            "Delayed Burn": round(countCT_DelayedBurn / totalCombos, 3),
+            "Double Bolt": round(countCT_DoubleBolt / totalCombos, 3)
+        }
+    }
+
+    return resultsSummary
+
+runSimulations(EXPERIMENT_DIR, typesNeededList, NUM_GAMES, takeTurn, playGame, recordGameResult, recordSimulationSummary)
 
 resultsDir = "../Results/" + EXPERIMENT_DIR
 dimensions = ["Seal of Fire", "Thunderous Wrath"]

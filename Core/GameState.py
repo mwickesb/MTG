@@ -29,7 +29,8 @@ def importDeck(file_name):
     library = Zone("library")
 
     # Load your deck, save it as a Library, and shuffle it up
-    decklist = json.load(open(file_name))
+    expObject = json.load(open(file_name))
+    decklist = expObject["decklist"]
     for k, v in decklist.items():
         for n in range(v["num"]):
             type = v["properties"]["type"]
@@ -45,7 +46,7 @@ def importDeck(file_name):
                 card = Card(k, "other", mana)
             library.addCard(card)
 
-    return library
+    return (library, expObject["config"])
 
 
 def createLookupTable(N_digits):

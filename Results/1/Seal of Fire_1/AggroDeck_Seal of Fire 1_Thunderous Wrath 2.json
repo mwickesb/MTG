@@ -1,1 +1,1 @@
-{"WinningTurn": -1, "ComboTurn": [0, 0.165, 0.183], "mulligans": [0.589, 0.329, 0.082], "comboType": {"Miracle": 0.045, "Delayed Burn": 0.546, "Double Bolt": 0.408}}
+{"WinningTurn": -1, "ComboTurn": [0, 0.149, 0.16], "mulligans": [0.585, 0.326, 0.089], "comboType": {"Miracle": 0.049, "Delayed Burn": 0.559, "Double Bolt": 0.391}, "config": {"dimensions": {"Seal of Fire": 1, "Thunderous Wrath": 2}}}
