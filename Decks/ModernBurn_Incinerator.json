@@ -1,0 +1,60 @@
+{
+    "Chandras Incinerator": {
+        "num": 4,
+        "properties": {
+            "type" : "creature",
+            "mana" : "5R",
+            "power": 6,
+            "toughness": 6
+        }
+    },
+    "Seal of Fire": {
+        "num": 4,
+        "properties": {
+            "type" : "enchantment",
+            "mana" : "R",
+            "damage": 2
+        }
+    },
+    "Rift Bolt": {
+        "num": 4,
+        "properties": {
+            "type" : "sorcery",
+            "mana" : "R",
+            "damage": 3
+        }
+    },
+    "Bolt Burn": {
+        "num": 14,
+        "properties": {
+            "type" : "instant",
+            "mana" : "R",
+            "damage": 3
+        }
+    },
+    "Land": {
+        "num": 20,
+        "properties": {
+            "type" : "land",
+            "mana" : ""
+        }
+    },
+    "Thunderous Wrath": {
+        "num": 3,
+        "properties": {
+            "type" : "sorcery",
+            "mana" : "4RR",
+            "damage": 5
+        }
+    },
+    "Other Spell": {
+        "num": 11,
+        "properties": {
+            "type" : "other",
+            "mana" : "R",
+            "power": 2,
+            "toughness": 2,
+            "abilities": "haste"
+        }
+    }
+}

@@ -25,7 +25,7 @@
         }
     },
     "Bolt Burn": {
-        "num": 14,
+        "num": 16,
         "properties": {
             "type" : "instant",
             "mana" : "R",
@@ -40,7 +40,7 @@
         }
     },
     "Thunderous Wrath": {
-        "num": 3,
+        "num": 4,
         "properties": {
             "type" : "sorcery",
             "mana" : "4RR",
@@ -48,12 +48,13 @@
         }
     },
     "Other Spell": {
-        "num": 11,
+        "num": 8,
         "properties": {
-            "type" : "other",
+            "type" : "creature",
             "mana" : "R",
             "power": 2,
-            "toughness": 2
+            "toughness": 2,
+            "abilities": "haste"
         }
     }
 }

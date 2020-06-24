@@ -59,7 +59,7 @@ class Ability(object):
 
 def buildAbility(string):
     if string != '':
-        abil = string.strip().split(':')
-        return Ability(abil[1], int(abil[2]), abil[0])
+        abil = string.strip().split()
+        return abil
     else:
-        return None
+        return string

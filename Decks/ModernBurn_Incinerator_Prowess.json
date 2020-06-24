@@ -1,0 +1,86 @@
+{
+    "Chandras Incinerator": {
+        "num": 4,
+        "properties": {
+            "type" : "creature",
+            "mana" : "5R",
+            "power": 6,
+            "toughness": 6
+        }
+    },
+    "Rift Bolt": {
+        "num": 4,
+        "properties": {
+            "type" : "sorcery",
+            "mana" : "R",
+            "damage": 3
+        }
+    },
+    "Bolt Burn": {
+        "num": 16,
+        "properties": {
+            "type" : "instant",
+            "mana" : "R",
+            "damage": 3
+        }
+    },
+    "Shard Valley": {
+        "num": 2,
+        "properties": {
+            "type" : "instant",
+            "mana" : "R",
+            "damage": 3
+        }
+    },
+    "Skull Crack": {
+        "num": 2,
+        "properties": {
+            "type" : "instant",
+            "mana" : "1R",
+            "damage": 3
+        }
+    },
+    "Searing Blaze": {
+        "num": 4,
+        "properties": {
+            "type" : "instant",
+            "mana" : "RR",
+            "damage": 1,
+            "landfall": 1
+        }
+    },
+    "Non Fetch Land": {
+        "num": 12,
+        "properties": {
+            "type" : "land",
+            "mana" : ""
+        }
+    },
+    "Fetch Land": {
+        "num": 8,
+        "properties": {
+            "type" : "land",
+            "mana" : ""
+        }
+    },
+    "Monastery Swiftspear": {
+        "num": 4,
+        "properties": {
+            "type" : "creature",
+            "mana" : "R",
+            "power": 1,
+            "toughness": 2,
+            "abilities": "prowess haste"
+        }
+    },
+    "Bedlam Reveler": {
+        "num": 4,
+        "properties": {
+            "type" : "creature",
+            "mana" : "6RR",
+            "power": 3,
+            "toughness": 4,
+            "abilities": "prowess"
+        }
+    }
+}

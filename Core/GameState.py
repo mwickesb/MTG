@@ -37,7 +37,12 @@ def importDeck(file_name):
             mana = v["properties"]["mana"]
             card = {}
             if type == "creature":
-                card = Creature(k, mana, 1, 1, "")
+                power = v["properties"]["power"]
+                toughness = v["properties"]["toughness"]
+                abilities = ''
+                if "abilities" in v["properties"]:
+                    abilities = v["properties"]["abilities"]
+                card = Creature(k, mana, power, toughness, abilities)
             elif type == "instant":
                 card = Instant(k, mana, "")
             elif type == "land":

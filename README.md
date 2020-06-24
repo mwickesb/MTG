@@ -28,11 +28,6 @@ addition to ML driven optimization
 ![Overall Rate](Documentation/OverallRate.png)
 
 
-**T2 Combo Rate**
+**Average Damage output over 3 Turns**
 
-![T2 Rate](Documentation/T2Rate.png)
-
-
-**T3 Combo Rate**
-
-![T3 Rate](Documentation/T3Rate.png)
+![T2 Rate](Documentation/Damage%20Output_3%20Turns.png)

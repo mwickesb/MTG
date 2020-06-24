@@ -13,9 +13,9 @@ class ScoreCriteria(object):
         return self.scoreResult(result)
 
     def scoreResult(self, result):
-        indexedValue = {}
+        indexedValue = result
         for resultKey in self.index:
-            indexedValue = result[resultKey]
+            indexedValue = indexedValue[resultKey]
 
         return self.calcValue(indexedValue)
 

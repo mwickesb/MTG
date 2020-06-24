@@ -19,6 +19,13 @@ class Zone: #Library, Hand, Graveyard, Battlefield, etc
 
         return None
 
+    def removeCardType(self, cardtype):
+        for i, c in enumerate(self.card_list):
+            if c.card_type == cardtype:
+                return self.card_list.pop(i)
+
+        return None
+
     def printCards(self):
         card_index = 1
         print("\nCards in %s zone" % self.name)
