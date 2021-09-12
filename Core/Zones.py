@@ -26,6 +26,33 @@ class Zone: #Library, Hand, Graveyard, Battlefield, etc
 
         return None
 
+    # This will search for a card that meets a detailed condition
+    # details - An array of dictionary objects.  Each dictionary describes a set AND conditions that must be met to return the card
+    #           Each entry in the array describes an OR clause. I.e. if the first dictionary doesn't match any cards then we search by the next dictionary
+    def removeCardByDetails(self, detailOptions):
+        for details in detailOptions:
+            for i, c in enumerate(self.card_list):
+                numDetails = len(details)
+                for j, d in enumerate(details):
+
+                    # Checks for numbers or booleans
+                    if isinstance(details[d], int):
+                        if d not in c.properties:
+                            break
+                        if details[d] != c.properties[d]:
+                            break
+                        if (j == (numDetails - 1)) and (details[d] == c.properties[d]):
+                            return self.card_list.pop(i)
+
+                    # Checks for strings and sets
+                    else:
+                        if details[d] not in c.properties[d]:
+                            break
+                        if (j == (numDetails - 1)) and (details[d] in c.properties[d]):
+                            return self.card_list.pop(i)
+
+        return None
+
     def printCards(self):
         card_index = 1
         print("\nCards in %s zone" % self.name)
@@ -56,3 +83,30 @@ class Zone: #Library, Hand, Graveyard, Battlefield, etc
                 numFound += 1
 
         return numFound
+
+    # This will search for a card that meets a detailed condition
+    # details - An array of dictionary objects.  Each dictionary describes a set AND conditions that must be met to return the card
+    #           Each entry in the array describes an OR clause. I.e. if the first dictionary doesn't match any cards then we search by the next dictionary
+    def containsCardByDetails(self, detailOptions):
+        for details in detailOptions:
+            for i, c in enumerate(self.card_list):
+                numDetails = len(details)
+                for j, d in enumerate(details):
+
+                    # Checks for numbers or booleans
+                    if isinstance(details[d], int):
+                        if d not in c.properties:
+                            break
+                        if details[d] != c.properties[d]:
+                            break
+                        if (j == (numDetails - 1)) and (details[d] == c.properties[d]):
+                            return True
+
+                    # Checks for strings and sets
+                    else:
+                        if details[d] not in c.properties[d]:
+                            break
+                        if (j == (numDetails - 1)) and (details[d] in c.properties[d]):
+                            return True
+
+        return False

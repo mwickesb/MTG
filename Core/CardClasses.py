@@ -2,10 +2,15 @@ import uuid
 
 class Card(object):  # superclass of "Card" - every card inherits these attributes
 
-    def __init__(self, name, card_type, mana_cost):
+    def __init__(self, name, card_type, mana_cost, card_properties={}):
         self.name = name  # Spell Name
+
         self.card_type = card_type  # Card Type - initialized in subclass
         self.mana_cost = mana_cost  # Converted mana cost
+
+        self.properties = {}
+        self.properties.update(card_properties)
+
         self.UUID = uuid.uuid4()  # Create unique card ID
 
     def __str__(self):
@@ -33,8 +38,7 @@ class Creature(Card):  # subclass "Creature"
             self.turns = 0  # and 0 for creatures without haste. the attack function will check this
 
 
-class Instant(
-    Card):  # subclass "Instant" - maybe we should change this to 'spell' - no need to differentiate instants and sorceries
+class Instant(Card):  # subclass "Instant" - maybe we should change this to 'spell' - no need to differentiate instants and sorceries
 
     def __init__(self, name, mana_cost, ability):
         Card.__init__(self, name, "Instant", mana_cost)

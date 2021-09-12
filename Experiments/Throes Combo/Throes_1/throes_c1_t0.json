@@ -1,0 +1,135 @@
+{
+    "decklist": {
+        "Omniscience": {
+            "num": 2,
+            "properties": {
+                "type": "Enchantment",
+                "mana": "7UUU"
+            }
+        },
+        "Big Bomb": {
+            "num": 16,
+            "properties": {
+                "type": "sorcery",
+                "mana": "7"
+            }
+        },
+        "Midrange Bomb": {
+            "num": 3,
+            "properties": {
+                "type": "Planeswalker",
+                "mana": "3GG"
+            }
+        },
+        "Treasure Maker": {
+            "num": 6,
+            "properties": {
+                "type": "instant",
+                "mana": "6RU"
+            }
+        },
+        "Throes of Chaos": {
+            "num": 1,
+            "properties": {
+                "type": "sorcery",
+                "mana": "3R",
+                "cascade": 1,
+                "retrace": 1
+            }
+        },
+        "Tibalt's Trickery": {
+            "num": 0,
+            "properties": {
+                "type": "instant",
+                "mana": "1R",
+                "combo": 1
+            }
+        },
+        "Mountain": {
+            "num": 2,
+            "properties": {
+                "type": "land",
+                "mana": "R",
+                "tapped": 0,
+                "basic_type": ["mountain"]
+            }
+        },
+        "Forest": {
+            "num": 7,
+            "properties": {
+                "type": "land",
+                "mana": "G",
+                "tapped": 0,
+                "basic_type": ["forest"]
+            }
+        },
+        "Steam Vents": {
+            "num": 4,
+            "properties": {
+                "type": "land",
+                "mana": "RU",
+                "tapped": 0,
+                "basic_type": ["mountain", "island"]
+            }
+        },
+        "Sulfur Falls": {
+            "num": 4,
+            "properties": {
+                "type": "land",
+                "mana": "RU",
+                "tapped": 1,
+                "untapIfLand": ["island", "mountain"]
+            }
+        },
+        "Stomping Grounds": {
+            "num": 4,
+            "properties": {
+                "type": "land",
+                "mana": "GR",
+                "tapped": 0,
+                "basic_type": ["forest", "mountain"]
+            }
+        },
+        "Breeding Pool": {
+            "num": 4,
+            "properties": {
+                "type": "land",
+                "mana": "GU",
+                "tapped": 0,
+                "basic_type": ["forest", "island"]
+            }
+        },
+        "Ketria Triome": {
+            "num": 4,
+            "properties": {
+                "type": "land",
+                "mana": "GRU",
+                "tapped": 1,
+                "basic_type": ["forest", "mountain", "island"]
+            }
+        },
+        "Zagath Triome": {
+            "num": 2,
+            "properties": {
+                "type": "land",
+                "mana": "GBU",
+                "tapped": 1,
+                "basic_type": ["forest", "island", "swamp"]
+            }
+        },
+        "World Tree": {
+            "num": 1,
+            "properties": {
+                "type": "land",
+                "mana": "G",
+                "tapped": 1
+            }
+        }
+    },
+    "config": {
+        "dimensions": {
+            "Throes of Chaos": 1,
+            "Tibalt's Trickery": 0
+        }
+    }
+}

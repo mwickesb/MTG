@@ -27,7 +27,7 @@ COMBO_TYPE = "COMBO_TYPE"
 TOTAL_DAMAGE = "TOTAL_DAMAGE"
 
 # Runs through a directory of simulation experiments and saves results
-def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGame, recordGameResult, recordSimulationSummary):
+def runSimulations(experimentDirectory, detailsNeeded, numGames, numTurns, GameStateClass):
     pathToExperiments = PATH_TO_EXPERIMENTS + "/" + experimentDirectory
     pathToResults = PATH_TO_RESULTS + "/" + experimentDirectory
 
@@ -49,8 +49,6 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
     # Run a simulation for every experiment decklist in the experiments director
     for expIndex, experiment in enumerate(experiments):
 
-        # Import a Deck and draw a fresh hand
-        (library, config) = importDeck(experiment[0])
         game_results = []
 
         # Simulation loop
@@ -63,12 +61,14 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
                 print("#", end='')
                 sys.stdout.flush()
 
-            # Resolve mulligans
-            gamestate = mullToNeededTypes(library, typesNeeded)
-            numMull = 7 - len(gamestate.hand.card_list)
-            playGame(gamestate, playTurn)
+            # Import a Deck and draw a fresh hand
+            (gamestate, config) = GameStateClass.createFromExperiment(experiment[0])
 
-            result = recordGameResult(gamestate)
+            # Resolve mulligans
+            numMull = gamestate.resolveMulligans(detailsNeeded)
+            gamestate.playGame(numTurns)
+
+            result = gamestate.recordGameResult()
             result[MULL_COUNT] = numMull
             result[TOTAL_DAMAGE] = 20 - gamestate.opponentsLife
             game_results.append(result)
@@ -76,7 +76,7 @@ def runSimulations(experimentDirectory, typesNeeded, numGames, playTurn, playGam
         print("] -",round((expIndex+1)/len(experiments),3))
         sys.stdout.flush()
 
-        resultsSummary = recordSimulationSummary(game_results, numGames)
+        resultsSummary = gamestate.recordSimulationSummary(game_results, numGames)
         resultsSummary["config"] = config
 
         # Save results summary to file in a directory structure that mirrors the experiment structure
