@@ -51,7 +51,7 @@ class GameState: #Library, Hand, Graveyard, Battlefield, etc
     def resolveMulligans(self, typesNeeded, mulliganStrategy=mullToNeededDetails):
         return mulliganStrategy(self, typesNeeded)
 
-    # Helper functions for creating game states
+    # Create a game state from a Deck definition file
     @classmethod
     def createFromExperiment(cls, exp_file_name):
 
@@ -64,23 +64,6 @@ class GameState: #Library, Hand, Graveyard, Battlefield, etc
             for n in range(v["num"]):
                 card = Card(k, v["properties"]["type"], v["properties"]["mana"], v["properties"])
                 library.addCard(card)
-                # type = v["properties"]["type"]
-                # mana = v["properties"]["mana"]
-                # card = {}
-                # if type == "creature":
-                #     power = v["properties"]["power"]
-                #     toughness = v["properties"]["toughness"]
-                #     abilities = ''
-                #     if "abilities" in v["properties"]:
-                #         abilities = v["properties"]["abilities"]
-                #     card = Creature(k, mana, power, toughness, abilities)
-                # elif type == "instant":
-                #     card = Instant(k, mana, "")
-                # elif type == "land":
-                #     card = Land(k, "R")
-                # else:
-                #     card = Card(k, "other", mana)
-                # library.addCard(card)
 
         gamestate = cls()
         gamestate.library = library

@@ -1,0 +1,1 @@
+{"WinningTurn": -1, "ComboTurn": [0, 0, 0.0, 0.807, 0.193], "mulligans": [0.34, 0.198, 0.17, 0.126, 0.166], "comboType": {"Big Bomb": 0.806, "Midrange Card": 0.0, "Fizzle": 0.049, "No Combo": 0.145}, "config": {"dimensions": {"Big Bomb": 28, "Land": 25, "Treasure Maker": 0}, "constraints": {"Big Bomb": [12, 32], "Land": [24, 40], "Treasure Maker": [0, 8]}}}

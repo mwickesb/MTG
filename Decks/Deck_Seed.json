@@ -1,0 +1,70 @@
+{
+    "decklist": {
+        "Omniscience": {
+            "num": 2,
+            "properties": {
+                "type": "enchantment",
+                "mana": "7UUU"
+            }
+        },
+        "Big Bomb": {
+            "num": 18,
+            "properties": {
+                "type": "sorcery",
+                "mana": "7"
+            }
+        },
+        "Midrange Bomb": {
+            "num": 0,
+            "properties": {
+                "type": "Planeswalker",
+                "mana": "3GG"
+            }
+        },
+        "Treasure Maker": {
+            "num": 4,
+            "properties": {
+                "type": "instant",
+                "mana": "6RU"
+            }
+        },
+        "Throes of Chaos": {
+            "num": 4,
+            "properties": {
+                "type": "sorcery",
+                "mana": "3R",
+                "cascade": 1,
+                "retrace": 1
+            }
+        },
+        "Tibalt's Trickery": {
+            "num": 3,
+            "properties": {
+                "type": "instant",
+                "mana": "1R",
+                "combo": 1
+            }
+        },
+        "Land": {
+            "num": 29,
+            "properties": {
+                "type": "land",
+                "mana": "R",
+                "tapped": 0,
+                "basic_type": ["mountain"]
+            }
+        }
+    },
+    "config": {
+        "dimensions": {
+            "Big Bomb": 18,
+            "Land": 29,
+            "Treasure Maker": 4
+        },
+        "constraints": {
+            "Big Bomb": [10,30],
+            "Land": [24,40],
+            "Treasure Maker": [0,8]
+        }
+    }
+}

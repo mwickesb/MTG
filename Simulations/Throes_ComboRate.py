@@ -5,9 +5,9 @@ from Core.ScoreResults import *
 from Core.SimulationEngine import *
 from Strategy.MulliganStrategy import *
 
-EXPERIMENT_DIR = "Throes Combo"
-NUM_GAMES = 100
-NUM_TURNS = 10
+EXPERIMENT_DIR = "Throes Combo - Omniscience"
+NUM_GAMES = 1000
+NUM_TURNS = 5
 
 MULL_COUNT = "MULL_COUNT"
 COMBO_TURN = "COMBO_TURN"
@@ -317,50 +317,50 @@ class ThroesGame(GameState):  # subclass "GameState"
 runSimulations(EXPERIMENT_DIR, detailsNeededList, NUM_GAMES, NUM_TURNS, ThroesGame)
 
 resultsDir = "../Results/" + EXPERIMENT_DIR
-dimensions = ["Throes of Chaos", "Tibalt's Trickery"]
+dimensions = ["Land", "Treasure Maker"]
 
 # Visualize the simulations results
 def sumComboRate(comboRateByTurn):
     comboRate = 0
-    for i in range(0,len(comboRateByTurn)):
+    for i in range(0,4):
         comboRate += comboRateByTurn[i]
 
     return comboRate
 overallComboRate = ScoreCriteria(["ComboTurn"], sumComboRate)
-visualizeResults(resultsDir, dimensions, overallComboRate, "Overall Combo Rate - Chaos v Trickery")
+visualizeResults(resultsDir, dimensions, overallComboRate, "Overall Combo Rate - Land v Treasure")
 
 # Visualize T3 combo rate
 def getT3Combo(comboRateByTurn):
     return comboRateByTurn[2]
 t3ComboRate = ScoreCriteria(["ComboTurn"], getT3Combo)
-visualizeResults(resultsDir, dimensions, t3ComboRate, "T3 Combo Rate - Chaos v Trickery")
+visualizeResults(resultsDir, dimensions, t3ComboRate, "T3 Combo Rate - Land v Treasure")
 
 # Visualize T4 combo rate
 def getT4Combo(comboRateByTurn):
     return comboRateByTurn[3]
 t4ComboRate = ScoreCriteria(["ComboTurn"], getT4Combo)
-visualizeResults(resultsDir, dimensions, t4ComboRate, "T4 Combo Rate - Chaos v Trickery")
+visualizeResults(resultsDir, dimensions, t4ComboRate, "T4 Combo Rate - Land v Treasure")
 
 # Visualize Bomb Combo Rate
 def getRawScore(score):
     return score
 delayedRate = ScoreCriteria(["comboType", "Big Bomb"], getRawScore)
-visualizeResults(resultsDir, dimensions, delayedRate, "Bomb Combo Rate - Chaos v Trickery")
+visualizeResults(resultsDir, dimensions, delayedRate, "Bomb Combo Rate - Land v Treasure")
 
 # Visualize Midrange Combo Rate
 def getRawScore(score):
     return score
 delayedRate = ScoreCriteria(["comboType", "Midrange Card"], getRawScore)
-visualizeResults(resultsDir, dimensions, delayedRate, "Midrange Combo Rate - Chaos v Trickery")
+visualizeResults(resultsDir, dimensions, delayedRate, "Midrange Combo Rate - Land v Treasure")
 
 # Visualize Fizzle Rate
 def getRawScore(score):
     return score
 delayedRate = ScoreCriteria(["comboType", "Fizzle"], getRawScore)
-visualizeResults(resultsDir, dimensions, delayedRate, "Fizzle Rate - Chaos v Trickery")
+visualizeResults(resultsDir, dimensions, delayedRate, "Fizzle Rate - Land v Treasure")
 
 # Visualize No Combo Rate
 def getRawScore(score):
     return score
 delayedRate = ScoreCriteria(["comboType", "No Combo"], getRawScore)
-visualizeResults(resultsDir, dimensions, delayedRate, "No Combo Rate - Chaos v Trickery")
+visualizeResults(resultsDir, dimensions, delayedRate, "No Combo Rate - Land v Treasure")
